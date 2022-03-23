@@ -2,13 +2,13 @@ server:
   port: 8080
 mpesa:
   daraja:
-    consumer-key: 1FFJ7qFqVc4ikded6FU9iYLb4lkWMXAp
-    consumer-secret: oOQpAmZyL7xueLj8
+    consumer-key: HFEJIgcmyUvUtQC5XvavNyqre55TxzkI
+    consumer-secret: yWUDLDMxsalwbAc1
     grant-type: client_credentials
-    oauth-endpoint: https://sandbox.safaricom.co.ke/oauth/v1/generate
-    shortCode: 603021
-    confirmationURL: http://localhost:8080/mobile-money/confirmation
-    validationURL: http://localhost:8080/mobile-money/validation
+    oauth-endpoint: https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials
+    shortCode: 123456
+    confirmationURL: http://cc1a-196-207-137-127.ngrok.io/mobile-money/confirmation
+    validationURL: http://cc1a-196-207-137-127.ngrok.io/mobile-money/validation
     responseType: Completed
     register-url-endpoint: https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl
     simulate-transaction-endpoint: https://sandbox.safaricom.co.ke/mpesa/c2b/v1/simulate
@@ -22,7 +22,7 @@ mpesa:
     stkPassKey: bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919
     stkPushShortCode: 174379
     stkPushRequestUrl: https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest
-    stkPushRequestCallbackUrl: https://279eba87a32e.ngrok.io/mobile-money/stk-transaction-result
+    stkPushRequestCallbackUrl: https://localhost:8080/mobile-money/stk-transaction-result
     lnmQueryRequestUrl: https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query
 
 spring:

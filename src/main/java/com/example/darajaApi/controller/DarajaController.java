@@ -35,7 +35,7 @@ public class DarajaController {
     }
 
     @GetMapping(path = "/token", produces = "application/json")
-    public ResponseEntity<AccessTokenResponse>getAccessToken(){
+    public ResponseEntity<AccessTokenResponse> getAccessToken() {
         return ResponseEntity.ok(darajaApiService.getAccessToken());
     }
     @PostMapping(path = "/register-url",produces = "application/json")

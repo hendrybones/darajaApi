@@ -6,10 +6,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.CharacterPredicates;
 import org.apache.commons.text.RandomStringGenerator;
-import org.bouncycastle.util.encoders.Base64;
+import org.bson.internal.Base64;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -32,9 +31,8 @@ import static org.apache.tomcat.util.security.MD5Encoder.encode;
 public class HelperUtility {
     public static String toBase64String(String value) {
         byte[] data = value.getBytes(StandardCharsets.ISO_8859_1);
-        return String.valueOf(Base64.encode(data));
+        return Base64.encode(data);
     }
-
 
     public static String toJson(Object object) {
         try {

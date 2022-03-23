@@ -31,7 +31,6 @@ public class DarajaApiServiceImplementation  implements DarajaApiService{
     @Override
     public AccessTokenResponse getAccessToken() {
         // get the Base64 rep of consumerKey + ":" + consumerSecret
-
         String encodedCredentials = HelperUtility.toBase64String(String.format("%s:%s", mpesaConfiguration.getConsumerKey(),
                 mpesaConfiguration.getConsumerSecret()));
 
@@ -51,6 +50,7 @@ public class DarajaApiServiceImplementation  implements DarajaApiService{
         } catch (IOException e) {
             log.error(String.format("Could not get access token. -> %s", e.getLocalizedMessage()));
             return null;
+
         }
     }
 
