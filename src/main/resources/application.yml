@@ -1,0 +1,14 @@
+server:
+  port: 8080
+mpesa:
+  daraja:
+    consumer-key: 1FFJ7qFqVc4ikded6FU9iYLb4lkWMXAp
+    consumer-secret: oOQpAmZyL7xueLj8
+    grant-type: client_credentials
+    oauth-endpoint: https://sandbox.safaricom.co.ke/oauth/v1/generate
+    shortCode: 603021
+    confirmationURL: http://localhost:8080/mobile-money/confirmation
+    validationURL: http://localhost:8080/mobile-money/validation
+    responseType: Completed
+    register-url-endpoint: https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl
+
