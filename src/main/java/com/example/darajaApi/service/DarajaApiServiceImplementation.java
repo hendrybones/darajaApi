@@ -56,32 +56,35 @@ public class DarajaApiServiceImplementation  implements DarajaApiService{
 
     @Override
     public RegisterUrlResponse registerUrl() {
-        AccessTokenResponse accessTokenResponse=getAccessToken();
-        RegisterUrlRequest registerUrlRequest=new RegisterUrlRequest();
+        AccessTokenResponse accessTokenResponse = getAccessToken();
+
+        RegisterUrlRequest registerUrlRequest = new RegisterUrlRequest();
         registerUrlRequest.setConfirmationURL(mpesaConfiguration.getConfirmationURL());
         registerUrlRequest.setResponseType(mpesaConfiguration.getResponseType());
         registerUrlRequest.setShortCode(mpesaConfiguration.getShortCode());
         registerUrlRequest.setValidationURL(mpesaConfiguration.getValidationURL());
 
-        RequestBody body=RequestBody.create(JSON_MEDIA_TYPE, Objects.requireNonNull(HelperUtility.toJson(registerUrlRequest)));
 
-        Request request= new Request.Builder()
+        RequestBody body = RequestBody.create(JSON_MEDIA_TYPE,
+                Objects.requireNonNull(HelperUtility.toJson(registerUrlRequest)));
+
+        Request request = new Request.Builder()
                 .url(mpesaConfiguration.getRegisterUrlEndpoint())
                 .post(body)
                 .addHeader("Authorization", String.format("%s %s", BEARER_AUTH_STRING, accessTokenResponse.getAccessToken()))
                 .build();
 
         try {
-            Response response=okHttpClient.newCall(request).execute();
+            Response response = okHttpClient.newCall(request).execute();
 
-            assert response.body() !=null;
-            return  objectMapper.readValue(response.body().string(),RegisterUrlResponse.class);
+            assert response.body() != null;
+            // use Jackson to Decode the ResponseBody ...
+            return objectMapper.readValue(response.body().string(), RegisterUrlResponse.class);
+
         } catch (IOException e) {
-            log.error(String.format("Could not get access token. -> %s", e.getLocalizedMessage()));
+            log.error(String.format("Could not register url -> %s", e.getLocalizedMessage()));
             return null;
         }
-
-
     }
 
     @Override
