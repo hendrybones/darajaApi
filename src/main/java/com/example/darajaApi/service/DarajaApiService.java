@@ -1,7 +1,6 @@
 package com.example.darajaApi.service;
 
-import com.example.darajaApi.data.AccessTokenResponse;
-import com.example.darajaApi.data.RegisterUrlResponse;
+import com.example.darajaApi.data.*;
 
 public interface DarajaApiService {
     /**
@@ -9,4 +8,7 @@ public interface DarajaApiService {
      */
     AccessTokenResponse getAccessToken();
     RegisterUrlResponse registerUrl();
+    SimulateTransactionResponse simulateC2BTransaction(SimulateTransactionRequest simulateTransactionRequest);
+    CommonSyncResponse performB2CTransaction(InternalB2CTransactionRequest internalB2CTransactionRequest);
+    TransactionStatusSyncResponse getTransactionResult(InternalTransactionStatusRequest internalTransactionStatusRequest);
 }

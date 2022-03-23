@@ -17,6 +17,21 @@ public class MpesaConfiguration {
     private String validationURL;
     private String responseType;
     private String registerUrlEndpoint;
+    private String simulateTransactionEndpoint;
+    private String b2cTransactionEndpoint;
+    private String b2cResultUrl;
+    private String b2cQueueTimeoutUrl;
+    private String b2cInitiatorName;
+    private String b2cInitiatorPassword;
+    private String transactionResultUrl;
+    private String checkAccountBalanceUrl;
+    private String stkPassKey;
+    private String stkPushShortCode;
+    private String stkPushRequestUrl;
+    private String stkPushRequestCallbackUrl;
+    private String lnmQueryRequestUrl;
+
+
 
     @Override
     public String toString() {

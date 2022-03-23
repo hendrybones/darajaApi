@@ -1,4 +1,5 @@
 package com.example.darajaApi;
+import com.example.darajaApi.data.AcknowledgeResponse;
 import okhttp3.OkHttpClient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,5 +22,13 @@ public class DarajaApiApplication {
 	public ObjectMapper getObjectMapper() {
 		return new ObjectMapper();
 	}
+
+	@Bean
+	public AcknowledgeResponse getAcknowledgeResponse() {
+		AcknowledgeResponse acknowledgeResponse = new AcknowledgeResponse();
+		acknowledgeResponse.setMessage("Success");
+		return acknowledgeResponse;
+	}
+
 
 }
