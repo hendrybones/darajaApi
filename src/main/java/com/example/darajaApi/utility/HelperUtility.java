@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.text.CharacterPredicates;
+import org.apache.commons.text.RandomStringGenerator;
 import org.bouncycastle.util.encoders.Base64;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -21,6 +23,8 @@ import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static org.apache.tomcat.util.security.MD5Encoder.encode;
 
@@ -74,23 +78,23 @@ public class HelperUtility {
     }
 
 
-//    public static String getTransactionUniqueNumber() {
-//        RandomStringGenerator stringGenerator = new RandomStringGenerator.Builder()
-//                .withinRange('0', 'z')
-//                .filteredBy(CharacterPredicates.LETTERS, CharacterPredicates.DIGITS)
-//                .build();
-//        String transactionNumber=stringGenerator.generate(12).toUpperCase();
-//        log.info(String.format("Transaction Number: %s", transactionNumber));
-//        return transactionNumber;
-//    }
-//
-//    public static String getStkPushPassword(String shortCode, String passKey, String timestamp) {
-//        String concatenatedString = String.format("%s%s%s", shortCode, passKey, timestamp);
-//        return toBase64String(concatenatedString);
-//    }
-//
-//    public static String getTransactionTimestamp() {
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-//        return dateFormat.format(new Date());
-//    }
+    public static String getTransactionUniqueNumber() {
+        RandomStringGenerator stringGenerator = new RandomStringGenerator.Builder()
+                .withinRange('0', 'z')
+                .filteredBy(CharacterPredicates.LETTERS, CharacterPredicates.DIGITS)
+                .build();
+        String transactionNumber=stringGenerator.generate(12).toUpperCase();
+        log.info(String.format("Transaction Number: %s", transactionNumber));
+        return transactionNumber;
+    }
+
+    public static String getStkPushPassword(String shortCode, String passKey, String timestamp) {
+        String concatenatedString = String.format("%s%s%s", shortCode, passKey, timestamp);
+        return toBase64String(concatenatedString);
+    }
+
+    public static String getTransactionTimestamp() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+        return dateFormat.format(new Date());
+    }
 }

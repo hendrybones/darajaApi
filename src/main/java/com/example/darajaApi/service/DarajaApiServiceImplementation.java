@@ -2,6 +2,7 @@ package com.example.darajaApi.service;
 
 import com.example.darajaApi.config.MpesaConfiguration;
 import com.example.darajaApi.data.*;
+import com.example.darajaApi.utility.Constants;
 import com.example.darajaApi.utility.HelperUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -152,6 +153,166 @@ public class DarajaApiServiceImplementation  implements DarajaApiService{
         }
 
     }
+
+    @Override
+    public TransactionStatusSyncResponse getTransactionResult(InternalTransactionStatusRequest internalTransactionStatusRequest) {
+        TransactionStatusRequest transactionStatusRequest = new TransactionStatusRequest();
+        transactionStatusRequest.setTransactionID(internalTransactionStatusRequest.getTransactionID());
+
+        transactionStatusRequest.setInitiator(mpesaConfiguration.getB2cInitiatorName());
+        transactionStatusRequest.setSecurityCredential(HelperUtility.getSecurityCredentials(mpesaConfiguration.getB2cInitiatorPassword()));
+        transactionStatusRequest.setCommandID(TRANSACTION_STATUS_QUERY_COMMAND);
+        transactionStatusRequest.setPartyA(mpesaConfiguration.getShortCode());
+        transactionStatusRequest.setIdentifierType(SHORT_CODE_IDENTIFIER);
+        transactionStatusRequest.setResultURL(mpesaConfiguration.getB2cResultUrl());
+        transactionStatusRequest.setQueueTimeOutURL(mpesaConfiguration.getB2cQueueTimeoutUrl());
+        transactionStatusRequest.setRemarks(TRANSACTION_STATUS_VALUE);
+        transactionStatusRequest.setOccasion(TRANSACTION_STATUS_VALUE);
+
+        AccessTokenResponse accessTokenResponse = getAccessToken();
+
+        RequestBody body = RequestBody.create(JSON_MEDIA_TYPE,
+                Objects.requireNonNull(HelperUtility.toJson(transactionStatusRequest)));
+
+        Request request = new Request.Builder()
+                .url(mpesaConfiguration.getTransactionResultUrl())
+                .post(body)
+                .addHeader(AUTHORIZATION_HEADER_STRING, String.format("%s %s", BEARER_AUTH_STRING, accessTokenResponse.getAccessToken()))
+                .build();
+
+        try {
+            Response response = okHttpClient.newCall(request).execute();
+            assert response.body() != null;
+            // use Jackson to Decode the ResponseBody ...
+
+            return objectMapper.readValue(response.body().string(), TransactionStatusSyncResponse.class);
+        } catch (IOException e) {
+            log.error(String.format("Could not fetch transaction result -> %s", e.getLocalizedMessage()));
+            return null;
+        }
+    }
+
+    @Override
+    public CommonSyncResponse checkAccountBalance() {
+
+        CheckAccountBalanceRequest checkAccountBalanceRequest = new CheckAccountBalanceRequest();
+        checkAccountBalanceRequest.setInitiator(mpesaConfiguration.getB2cInitiatorName());
+        checkAccountBalanceRequest.setSecurityCredential(HelperUtility.getSecurityCredentials(mpesaConfiguration.getB2cInitiatorPassword()));
+        checkAccountBalanceRequest.setCommandID(Constants.ACCOUNT_BALANCE_COMMAND);
+        checkAccountBalanceRequest.setPartyA(mpesaConfiguration.getShortCode());
+        checkAccountBalanceRequest.setIdentifierType(Constants.SHORT_CODE_IDENTIFIER);
+        checkAccountBalanceRequest.setRemarks("Check Account Balance");
+        checkAccountBalanceRequest.setQueueTimeOutURL(mpesaConfiguration.getB2cQueueTimeoutUrl());
+        checkAccountBalanceRequest.setResultURL(mpesaConfiguration.getB2cResultUrl());
+
+        AccessTokenResponse accessTokenResponse = getAccessToken();
+
+        RequestBody body = RequestBody.create(JSON_MEDIA_TYPE,
+                Objects.requireNonNull(HelperUtility.toJson(checkAccountBalanceRequest)));
+
+        Request request = new Request.Builder()
+                .url(mpesaConfiguration.getCheckAccountBalanceUrl())
+                .post(body)
+                .addHeader(AUTHORIZATION_HEADER_STRING, String.format("%s %s", BEARER_AUTH_STRING, accessTokenResponse.getAccessToken()))
+                .build();
+
+        try {
+            Response response = okHttpClient.newCall(request).execute();
+            assert response.body() != null;
+            // use Jackson to Decode the ResponseBody ...
+
+            return objectMapper.readValue(response.body().string(), CommonSyncResponse.class);
+        } catch (IOException e) {
+            log.error(String.format("Could not fetch the account balance -> %s", e.getLocalizedMessage()));
+            return null;
+        }
+
+    }
+
+    @Override
+    public StkPushSyncResponse performStkPushTransaction(InternalStkPushRequest internalStkPushRequest) {
+
+        ExternalStkPushRequest externalStkPushRequest = new ExternalStkPushRequest();
+        externalStkPushRequest.setBusinessShortCode(mpesaConfiguration.getStkPushShortCode());
+
+        String transactionTimestamp = HelperUtility.getTransactionTimestamp();
+        String stkPushPassword = HelperUtility.getStkPushPassword(mpesaConfiguration.getStkPushShortCode(),
+                mpesaConfiguration.getStkPassKey(), transactionTimestamp);
+
+        externalStkPushRequest.setPassword(stkPushPassword);
+        externalStkPushRequest.setTimestamp(transactionTimestamp);
+        externalStkPushRequest.setTransactionType(Constants.CUSTOMER_PAYBILL_ONLINE);
+        externalStkPushRequest.setAmount(internalStkPushRequest.getAmount());
+        externalStkPushRequest.setPartyA(internalStkPushRequest.getPhoneNumber());
+        externalStkPushRequest.setPartyB(mpesaConfiguration.getStkPushShortCode());
+        externalStkPushRequest.setPhoneNumber(internalStkPushRequest.getPhoneNumber());
+        externalStkPushRequest.setCallBackURL(mpesaConfiguration.getStkPushRequestCallbackUrl());
+        externalStkPushRequest.setAccountReference(HelperUtility.getTransactionUniqueNumber());
+        externalStkPushRequest.setTransactionDesc(String.format("%s Transaction", internalStkPushRequest.getPhoneNumber()));
+
+        AccessTokenResponse accessTokenResponse = getAccessToken();
+
+        RequestBody body = RequestBody.create(JSON_MEDIA_TYPE,
+                Objects.requireNonNull(HelperUtility.toJson(externalStkPushRequest)));
+
+        Request request = new Request.Builder()
+                .url(mpesaConfiguration.getStkPushRequestUrl())
+                .post(body)
+                .addHeader(AUTHORIZATION_HEADER_STRING, String.format("%s %s", BEARER_AUTH_STRING, accessTokenResponse.getAccessToken()))
+                .build();
+
+
+        try {
+            Response response = okHttpClient.newCall(request).execute();
+            assert response.body() != null;
+            // use Jackson to Decode the ResponseBody ...
+
+            return objectMapper.readValue(response.body().string(), StkPushSyncResponse.class);
+        } catch (IOException e) {
+            log.error(String.format("Could not perform the STK push request -> %s", e.getLocalizedMessage()));
+            return null;
+        }
+
+    }
+
+    @Override
+    public LNMQueryResponse getTransactionStatus(InternalLNMRequest internalLNMRequest) {
+
+        ExternalLNMQueryRequest externalLNMQueryRequest = new ExternalLNMQueryRequest();
+        externalLNMQueryRequest.setBusinessShortCode(mpesaConfiguration.getStkPushShortCode());
+
+        String requestTimestamp = HelperUtility.getTransactionTimestamp();
+        String stkPushPassword = HelperUtility.getStkPushPassword(mpesaConfiguration.getStkPushShortCode(),
+                mpesaConfiguration.getStkPassKey(), requestTimestamp);
+
+        externalLNMQueryRequest.setPassword(stkPushPassword);
+        externalLNMQueryRequest.setTimestamp(requestTimestamp);
+        externalLNMQueryRequest.setCheckoutRequestID(internalLNMRequest.getCheckoutRequestID());
+
+        AccessTokenResponse accessTokenResponse = getAccessToken();
+
+        RequestBody body = RequestBody.create(JSON_MEDIA_TYPE,
+                Objects.requireNonNull(HelperUtility.toJson(externalLNMQueryRequest)));
+
+        Request request = new Request.Builder()
+                .url(mpesaConfiguration.getLnmQueryRequestUrl())
+                .post(body)
+                .addHeader(AUTHORIZATION_HEADER_STRING, String.format("%s %s", BEARER_AUTH_STRING, accessTokenResponse.getAccessToken()))
+                .build();
+
+        try {
+            Response response = okHttpClient.newCall(request).execute();
+            assert response.body() != null;
+            // use Jackson to Deserialising the ResponseBody ...
+            return objectMapper.readValue(response.body().string(), LNMQueryResponse.class);
+        } catch (IOException e) {
+            log.error(String.format("Could not get the transaction status -> %s", e.getLocalizedMessage()));
+            return null;
+        }
+
+    }
+
+
 
 
 }
